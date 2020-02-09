@@ -1,15 +1,14 @@
-const jwt = require('jsonwebtoken');
+const getSessionData = require('../utils/getSessionData');
 
 const authorization = async (req, res, next) => {
-    const token = req.header('Authorization');
+    const sessionData = getSessionData(req);
 
-    try {
-        req.sessionData = await jwt.verify(token, process.env.SECRET);
-        console.log(req.sessionData);
-        next();
-    } catch (error) {
+    if (!sessionData) {
         res.status(401).send({ error: 'Not authorized to access this resource' });
     }
+
+    req.sessionData = sessionData;
+    next();
 };
 
 module.exports = authorization;
