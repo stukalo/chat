@@ -1,6 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const util = require('util');
 const formidable = require('formidable');
 const express = require('express');
 const router = express.Router();
@@ -46,6 +45,7 @@ router.post('/avatar', async (request, response) => {
     let data;
     const form = new formidable.IncomingForm();
     const { userName } = request.sessionData;
+
     try {
         form.parse(request, (err, fields, files) => {
             const sourcePath = files.file.path;
