@@ -1,8 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const getSessionData = req => {
-    const token = req.header('Authorization');
-
+const getSessionData = token => {
     try {
         return jwt.verify(token, process.env.SECRET);
     } catch (e) {

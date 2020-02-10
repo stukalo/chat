@@ -8,7 +8,7 @@ const authorizationRouter = require('./routes/authorizationRouter');
 const registrationRouter = require('./routes/registrationRouter');
 const usersRouter = require('./routes/usersRouter');
 const path = require('path');
-const chatRouter = require('./routes/chatRouter');
+const wsChatRouter = require('./routes/wsChatRouter');
 require('dotenv').config({ path: path.join(__dirname, '../.env') });
 
 const connect = require('./database/connect');
@@ -22,17 +22,18 @@ app.use('/reg', registrationRouter);
 app.use('/auth', authorizationRouter);
 app.use('/users', usersRouter);
 
-expressWs.getWss().on('connection', ws => {
-    const sessionData = getSessionData(ws);
+expressWs.getWss().on('connection', (ws, req) => {
+    const { token } = req.query;
+    const sessionData = getSessionData(token);
 
     if (!sessionData) {
-        console.log('no sessionData');
         ws.close();
+        return;
     }
 
-    console.log('sessionData', sessionData);
     ws.sessionData = sessionData;
+    wsChatRouter.connectionHandler(ws);
 });
-app.ws('/ws-chat', chatRouter);
+app.ws('/ws-chat', wsChatRouter.webSocketHandler);
 
 module.exports = app;

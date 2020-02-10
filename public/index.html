@@ -4,21 +4,42 @@
 </head>
 <body>
 <h3>Chat Test</h3>
+<script src="sendPost.js"></script>
 <script>
-    const ws = new WebSocket("ws://localhost:3000/ws-chat");
+    sendPost('http://localhost:3000/auth', {
+        userName: 'Sasha',
+        password: 'querty',
+    }).then(response => {
+        connect(response.data.token);
+    }).catch(error => console.log(error));
 
-    ws.onmessage = event => {
-        console.log(event.data);
-    };
+    function connect(token) {
+        const ws = new WebSocket(`ws://localhost:3000/ws-chat?token=${token}`);
 
-    ws.onopen = () => {
-        console.log('open');
-        ws.send('message');
-    };
+        ws.onmessage = event => {
+            console.log(event.data);
+        };
 
-    ws.onclose = event => {
-        console.log(`close, code=${event.code}`);
-    };
+        ws.onopen = () => {
+            console.log('open');
+            const message = JSON.stringify(createMessageAction());
+            ws.send(message);
+        };
+
+        ws.onclose = event => {
+            console.log(`close, code=${event.code}`);
+        };
+    }
+
+    function createMessageAction() {
+        return {
+            type: "CREATE_CHAT_MESSAGE",
+            payload: {
+                receiver: "John Smith",
+                content: "Hi, John! How are you?"
+            }
+        };
+    }
 </script>
 </body>
 </html>
