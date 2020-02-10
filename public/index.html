@@ -4,13 +4,41 @@
 </head>
 <body>
 <h3>Chat Test</h3>
+<div>
+    <form id='form' action="/users/avatar" method="post" enctype="multipart/form-data">
+        <input id="file" type="file" name="avatar" />
+        <button type="submit">Send</button>
+    </form>
+</div>
+
 <script src="sendPost.js"></script>
 <script>
+    let token;
+
+    const form = document.getElementById('form');
+    const fileInput = document.getElementById('file');
+    form.onsubmit = evt => {
+        evt.preventDefault();
+
+        const action = form.getAttribute('action');
+        const formData = new FormData();
+        const file = fileInput.files[0];
+        formData.append('file', file);
+
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', action, true);
+        xhr.setRequestHeader('Authorization', token);
+        xhr.send(formData);
+
+        return false;
+    };
+
     sendPost('http://localhost:3000/auth', {
         userName: 'Sasha',
         password: 'querty',
     }).then(response => {
-        connect(response.data.token);
+        token = response.data.token;
+        connect(token);
     }).catch(error => console.log(error));
 
     function connect(token) {
