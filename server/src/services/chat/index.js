@@ -1,8 +1,10 @@
 const messagesService = require('../messages');
 const {
+    USER_CONNECTED,
+    USER_DISCONNECTED,
     CREATE_CHAT_MESSAGE,
-    CREATE_CHAT_MESSAGE_SUCCESS,
-    CREATE_CHAT_MESSAGE_FAILURE
+    CREATE_CHAT_MESSAGE_FAILURE,
+    CREATE_CHAT_MESSAGE_SUCCESS
 } = require('../../constants/messageTypes');
 
 const clients = [];
@@ -12,10 +14,10 @@ const handleCreateChatMessage = (ws, { payload }) => {
     const { receiver, content } = payload;
     const date = Date.now();
     const chatMessage = {
-        receiver,
-        content,
+        date,
         sender,
-        date
+        content,
+        receiver
     };
 
     try {
@@ -49,7 +51,13 @@ const handleClientMessage = (ws, { type, payload }) => {
 
 const handleClientConnect = ws => {
     clients.push(ws);
-    broadcast(`connected ${clients.length}`);
+    const { userName } = ws.sessionData;
+    const message = {
+        type: USER_CONNECTED,
+        payload: { userName }
+    };
+
+    broadcast(message);
 };
 
 const handleClientDisconnect = ws => {
@@ -59,7 +67,17 @@ const handleClientDisconnect = ws => {
         clients.splice(index, 1);
     }
 
-    console.log(`ws closed index=${index}`);
+    const { userName } = ws.sessionData;
+    const userSessions = clients.filter(client => client.sessionData.userName === userName);
+
+    if (!userSessions.length) {
+        const message = {
+            type: USER_DISCONNECTED,
+            payload: { userName }
+        };
+
+        broadcast(message);
+    }
 };
 
 const sendUserMessage = (userName, message) => {
@@ -70,7 +88,10 @@ const broadcast = message => {
     clients.forEach(client => client.send(JSON.stringify(message)));
 };
 
+const getOnlineUsers = () => clients.map(client => client.sessionData.userName);
+
 module.exports = {
+    getOnlineUsers,
     handleClientConnect,
     handleClientMessage,
     handleClientDisconnect

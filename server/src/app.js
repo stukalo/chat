@@ -1,17 +1,19 @@
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+const bodyParser = require('body-parser');
+const connect = require('./database/connect');
+const getSessionData = require('./utils/getSessionData');
+
 const express = require('express');
 const app = express();
 const expressWs = require('express-uws')(app);
 
-const getSessionData = require('./utils/getSessionData');
-const bodyParser = require('body-parser');
-const authorizationRouter = require('./routes/authorizationRouter');
-const registrationRouter = require('./routes/registrationRouter');
+const chatRouter = require('./routes/chatRouter');
 const usersRouter = require('./routes/usersRouter');
-const path = require('path');
 const wsChatRouter = require('./routes/wsChatRouter');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
-
-const connect = require('./database/connect');
+const registrationRouter = require('./routes/registrationRouter');
+const authorizationRouter = require('./routes/authorizationRouter');
 
 connect();
 
@@ -21,6 +23,7 @@ app.use(bodyParser.json());
 app.use('/reg', registrationRouter);
 app.use('/auth', authorizationRouter);
 app.use('/users', usersRouter);
+app.use('/chat', chatRouter);
 
 expressWs.getWss().on('connection', (ws, req) => {
     const { token } = req.query;
