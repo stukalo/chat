@@ -10,6 +10,9 @@
   },
   "author": "Stukalo Oleksandr",
   "license": "ISC",
+  "engines": {
+    "node": "10.15.3"
+  },
   "devDependencies": {
     "babel-eslint": "^10.0.3",
     "eslint": "^4.18.1",

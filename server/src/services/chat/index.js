@@ -67,6 +67,10 @@ const handleClientDisconnect = ws => {
         clients.splice(index, 1);
     }
 
+    if (!ws.sessionData) {
+        return;
+    }
+
     const { userName } = ws.sessionData;
     const userSessions = clients.filter(client => client.sessionData.userName === userName);
 
