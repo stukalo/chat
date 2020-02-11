@@ -25,6 +25,27 @@ router.post('/', async (request, response) => {
     response.json({ status, data });
 });
 
+router.put('/', async (request, response) => {
+    console.log(request);
+    let status = OK;
+    const data = {
+        message: 'User updated'
+    };
+    const { userName } = request.sessionData;
+
+    try {
+        await usersService.updateUser({
+            ...request.body,
+            userName
+        });
+    } catch (err) {
+        status = ERROR;
+        data.message = err.message;
+    }
+
+    response.json({ status, data });
+});
+
 router.get('/', async (request, response) => {
     let status = OK;
     let data = null;

@@ -6,6 +6,7 @@ const authorization = async (req, res, next) => {
 
     if (!sessionData) {
         res.status(401).send({ error: 'Not authorized to access this resource' });
+        return;
     }
 
     req.sessionData = sessionData;

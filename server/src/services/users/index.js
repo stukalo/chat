@@ -14,6 +14,19 @@ const createUser = async ({ userName, email, password }) => {
     }).save();
 };
 
+const updateUser = async ({ userName, email, password }) => {
+    const user = await User.findOne({ userName });
+
+    if (!user) {
+        throw new Error('User not found');
+    }
+
+    user.email = email;
+    user.password = password;
+
+    user.save();
+};
+
 const readUserByUserName = async userName => {
     return User.findOne({ userName });
 };
@@ -24,6 +37,7 @@ const readAllUsers = async () => {
 
 module.exports = {
     createUser,
+    updateUser,
     readAllUsers,
     readUserByUserName
 };
