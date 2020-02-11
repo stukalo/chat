@@ -50,7 +50,11 @@ router.get('/', async (request, response) => {
     let data = null;
 
     try {
-        const users = await usersService.readAllUsers();
+        const usersModels = await usersService.readAllUsers();
+        const users = usersModels.map(user => ({
+            email: user.email,
+            userName: user.userName
+        }));
         data = { users };
     } catch (err) {
         status = ERROR;
