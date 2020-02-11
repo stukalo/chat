@@ -26,7 +26,6 @@ router.post('/', async (request, response) => {
 });
 
 router.put('/', async (request, response) => {
-    console.log(request);
     let status = OK;
     const data = {
         message: 'User updated'
