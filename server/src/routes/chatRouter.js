@@ -13,7 +13,13 @@ router.get('/messages', async (request, response) => {
     const { userName } = request.sessionData;
 
     try {
-        data = await messagesService.readUserMessages(userName);
+        const messagesModels = await messagesService.readUserMessages(userName);
+        data = messagesModels.map(message => ({
+            date: message.date,
+            sender: message.sender,
+            content: message.content,
+            receiver: message.receiver
+        }));
     } catch (err) {
         status = ERROR;
         data = { message: err.message };
@@ -29,7 +35,13 @@ router.get('/dialog', async (request, response) => {
     const { userName: sender } = request.sessionData;
 
     try {
-        data = await messagesService.readUsersDialog({ sender, receiver });
+        const messagesModels = await messagesService.readUsersDialog({ sender, receiver });
+        data = messagesModels.map(message => ({
+            date: message.date,
+            sender: message.sender,
+            content: message.content,
+            receiver: message.receiver
+        }));
     } catch (err) {
         status = ERROR;
         data = { message: err.message };
