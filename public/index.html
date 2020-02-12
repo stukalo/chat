@@ -51,7 +51,7 @@
         ws.onopen = () => {
             console.log('open');
             const message = JSON.stringify(createMessageAction());
-            ws.send(message);
+            // ws.send(message);
         };
 
         ws.onclose = event => {
