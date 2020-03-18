@@ -1,4 +1,5 @@
 const path = require('path');
+const cors = require('cors');
 require('dotenv').config({ path: path.join(__dirname, '../../.env') });
 
 const bodyParser = require('body-parser');
@@ -17,6 +18,7 @@ const authorizationRouter = require('./routes/authorizationRouter');
 
 connect();
 
+app.use(cors());
 app.use(express.static('public'));
 
 app.use(bodyParser.json());

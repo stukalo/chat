@@ -6,7 +6,7 @@
 <h3>Chat Test</h3>
 <div>
     <form id='form' action="/users/avatar" method="post" enctype="multipart/form-data">
-        <input id="file" type="file" name="avatar" />
+        <input id="file" type="file" name="avatar"/>
         <button type="submit">Send</button>
     </form>
 </div>
@@ -14,35 +14,53 @@
 <script src="sendPost.js"></script>
 <script>
     let token;
-
+    const apiUrl = window.origin;
     const form = document.getElementById('form');
     const fileInput = document.getElementById('file');
+
     form.onsubmit = evt => {
         evt.preventDefault();
 
-        const action = form.getAttribute('action');
+        const url = `${apiUrl}${form.getAttribute('action')}`;
         const formData = new FormData();
         const file = fileInput.files[0];
         formData.append('file', file);
 
         const xhr = new XMLHttpRequest();
-        xhr.open('POST', action, true);
+        xhr.open('POST', url, true);
         xhr.setRequestHeader('Authorization', token);
         xhr.send(formData);
 
         return false;
     };
 
-    sendPost(`${window.origin}/auth`, {
+    sendPost(`${apiUrl}/auth`, {
         userName: 'Sasha',
         password: 'qwerty',
     }).then(response => {
         token = response.data.token;
         connect(token);
-    }).catch(error => console.log(error));
+        getDialog(token);
+    }).catch(error => {
+        console.log(error);
+    });
+
+    const getDialog = token => {
+        fetch(`${apiUrl}/chat/dialog?userName=John Smith`, {
+            method: 'GET',
+            headers: {
+                'Authorization': token,
+            }
+        }).then(res => {
+            res.json().then(data => console.log(data));
+        }).catch(err => {
+            console.log(err);
+        });
+    };
 
     function connect(token) {
-        const ws = new WebSocket(`${window.origin.replace('http', 'ws')}/ws-chat?token=${token}`);
+        const connectionUrl = `${apiUrl.replace('http', 'ws')}/ws-chat?token=${token}`;
+        const ws = new WebSocket(connectionUrl);
 
         ws.onmessage = event => {
             console.log(event.data);
