@@ -65,36 +65,37 @@ router.get('/', async (request, response) => {
 });
 
 router.post('/avatar', async (request, response) => {
-    let status = OK;
-    let data;
-    const form = new formidable.IncomingForm();
-    const { userName } = request.sessionData;
-
-    try {
-        form.parse(request, (err, fields, files) => {
-            const sourcePath = files.file.path;
-            const extension = path.extname(files.file.name);
-            const src = `/avatars/${userName}${extension}`;
-            const targetPath = path.join(__dirname, `../../../public${src}`);
-
-            const readStream = fs.createReadStream(sourcePath);
-            const writeStream = fs.createWriteStream(targetPath);
-
-            readStream.pipe(writeStream);
-
-            readStream.on('end', () => {
-                fs.unlinkSync(sourcePath);
-                data = { src };
-
-                response.json({ status, data });
-            });
-        });
-    } catch (error) {
-        status = ERROR;
-        data = { message: error.message };
-
-        response.json({ status, data });
-    }
+    response.json({ status: ERROR, data: 'Sorry, feature is not available now' });
+    // let status = OK;
+    // let data;
+    // const form = new formidable.IncomingForm();
+    // const { userName } = request.sessionData;
+    //
+    // try {
+    //     form.parse(request, (err, fields, files) => {
+    //         const sourcePath = files.file.path;
+    //         const extension = path.extname(files.file.name);
+    //         const src = `/avatars/${userName}${extension}`;
+    //         const targetPath = path.join(__dirname, `../../../public${src}`);
+    //
+    //         const readStream = fs.createReadStream(sourcePath);
+    //         const writeStream = fs.createWriteStream(targetPath);
+    //
+    //         readStream.pipe(writeStream);
+    //
+    //         readStream.on('end', () => {
+    //             fs.unlinkSync(sourcePath);
+    //             data = { src };
+    //
+    //             response.json({ status, data });
+    //         });
+    //     });
+    // } catch (error) {
+    //     status = ERROR;
+    //     data = { message: error.message };
+    //
+    //     response.json({ status, data });
+    // }
 });
 
 module.exports = router;
